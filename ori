@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sathya Store - QRIS Payment & Services</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1e1e2f, #2a2a4e);
+            color: #e0e0e0;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 30px;
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 {
+            text-align: center;
+            color: #00ffcc;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #b0b0ff;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            background: #2a2a4e;
+            color: #e0e0e0;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        input:focus {
+            outline: none;
+            box-shadow: 0 0 10px #00ffcc;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(45deg, #00ffcc, #007bff);
+            border: none;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 15px #00ffcc;
+        }
+
+        .qris-container {
+            text-align: center;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .qris-container img {
+            max-width: 200px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            animation: popIn 0.5s ease-in-out;
+        }
+
+        @keyframes popIn {
+            from { transform: scale(0); }
+            to { transform: scale(1); }
+        }
+
+        .status {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #b0b0ff;
+            text-align: center;
+        }
+
+        .loading {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #00ffcc;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+            display: none;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 14px;
+            animation: slideIn 0.5s ease-in-out;
+            display: none;
+            max-width: 300px;
+            word-wrap: break-word;
+        }
+
+        .success {
+            background: #28a745;
+        }
+
+        .error {
+            background: #dc3545;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); }
+            to { transform: translateX(0); }
+        }
+
+        /* Hamburger Menu */
+        .hamburger {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            font-size: 24px;
+            color: #00ffcc;
+            cursor: pointer;
+            z-index: 1000;
+        }
+
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: -250px;
+            width: 250px;
+            height: 100%;
+            background: rgba(255, 255, 255 0.1);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            transition: left 0.3s ease-in-out;
+            z-index: 999;
+        }
+
+        .sidebar.active {
+            left: 0;
+        }
+
+        .sidebar a {
+            display: block;
+            color: #e0e0e0;
+            padding: 10px 0;
+            text-decoration: none;
+            font-size: 16px;
+        }
+
+        .sidebar a:hover {
+            color: #00ffcc;
+        }
+
+        /* Profile Section */
+        .profile-section {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .profile-img {
+            border-radius: 50%;
+            box-shadow: 0 0 15px #00ffcc;
+            margin-bottom: 15px;
+        }
+
+        .tagline {
+            color: #b0b0ff;
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+
+        .about-content {
+            text-align: left;
+            line-height: 1.6;
+        }
+
+        .about-content a {
+            color: #00ffcc;
+            text-decoration: none;
+        }
+
+        .about-content a:hover {
+            text-decoration: underline;
+        }
+
+        .about-content ul {
+            list-style-type: disc;
+            margin-left: 20px;
+            margin-bottom: 20px;
+        }
+
+        /* E-Wallet Section */
+        .ewallet-section {
+            display: none;
+            text-align: left;
+        }
+
+        .ewallet-item {
+            margin-bottom: 15px;
+        }
+
+        .ewallet-item span {
+            color: #b0b0ff;
+            font-size: 16px;
+        }
+
+        .copy-btn {
+            padding: 8px;
+            background: #007bff;
+            border: none;
+            border-radius: 5px;
+            color: #fff;
+            cursor: pointer;
+            margin-left: 10px;
+            transition: all 0.3s;
+        }
+
+        .copy-btn:hover {
+            background: #00ffcc;
+        }
+
+        /* Contact Section */
+        .contact-section {
+            display: none;
+            text-align: left;
+        }
+
+        .contact-section a {
+            color: #00ffcc;
+            text-decoration: none;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .contact-section a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 20px;
+            }
+
+            .sidebar {
+                width: 200px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Hamburger Menu -->
+    <div class="hamburger" onclick="toggleSidebar()">
+        <i class="fas fa-bars"></i>
+    </div>
+    <div class="sidebar" id="sidebar">
+        <a href="#" onclick="showSection('profile')">Home</a>
+        <a href="#" onclick="showSection('qris')">QRIS Payment</a>
+        <a href="#" onclick="showSection('ewallet')">E-Wallet</a>
+        <a href="#" onclick="showSection('contact')">Owner Contact</a>
+    </div>
+
+    <!-- Main Container -->
+    <div class="container" id="mainContainer">
+        <!-- Profile Section (Initial Display) -->
+        <section id="profile" class="profile-section">
+            <img 
+                src="https://telegra.ph/file/a80b7f30770ea1f67b2b5.jpg"
+                alt="Profile photo of Sathya Store developer"
+                class="profile-img"
+                loading="lazy"
+                width="180"
+                height="180"
+            />
+            <h1>ProGramer Developer</h1>
+            <p class="tagline" aria-label="Professional developer tagline">𝙿𝚘𝚠𝚎𝚛𝚎𝚍 𝙱𝚢 𝚂𝙰𝚃𝙷𝚈𝙰.</p>
+            <div class="about-content">
+                <h2 id="about-title">About Me</h2>
+                <p>👋 Halo Sobat Digital! Aku <em>Sathya Store</em> — tempat terbaik buat kamu yang butuh solusi canggih dalam <strong>game development</strong>, <strong>bot script</strong>, dan <strong>suntik sosmed</strong>.</p>
+                <p>🚀 Mau naik level dalam game atau optimasi bisnis online kamu? Kami siap bantu dengan layanan berkualitas dan inovasi terbaru!</p>
+                <h3>✨ Layanan Unggulan Kami:</h3>
+                <ul>
+                    <li>📱 Murid Nokos siap pakai, mudah dan praktis</li>
+                    <li>🚀 Suntik Sosmed via apk & bot anti ribet</li>
+                    <li>👤 Jadi reseller panel, raih cuan maksimal</li>
+                    <li>🎮 Top Up semua game favoritmu</li>
+                    <li>🤖 Sewa bot powerfull, tanpa ribet</li>
+                    <li>📲 Bot Pushkontak otomatis dan efektif</li>
+                    <li>💻 Panel Bot lengkap, mudah dipakai</li>
+                    <li>📜 Script Bot siap pakai, tinggal klik!</li>
+                    <li>🆕 Jasa Install & Domain</li>
+                    <li>VPS Digital Ocean</li>
+                </ul>
+                <h3>🎯 Kenapa Pilih Sathya Store?</h3>
+                <ul>
+                    <li>Support penuh, cepat tanggap</li>
+                    <li>Harga bersaing, kualitas juara</li>
+                    <li>Update teknologi terbaru setiap saat</li>
+                </ul>
+                
+                <p><em>Sathya Store — BEE SMART BUYER & SELLER</em></p>
+            </div>
+        </section>
+
+        <!-- QRIS Payment Section -->
+        <section id="qris" style="display: none;">
+            <h1>QRIS Payment Generator</h1>
+            <div class="input-group">
+                <label for="amount">Transaction Amount (Min: 1000)</label>
+                <input type="number" id="amount" placeholder="Enter amount" min="1000">
+            </div>
+            <button onclick="createPayment()">Create QRIS Payment</button>
+            <div class="loading" id="loading"></div>
+            <div class="qris-container" id="qrisContainer">
+                <img id="qrisImage" src="" alt="QRIS Code">
+                <div class="status" id="status">Waiting for payment...</div>
+            </div>
+        </section>
+
+        <!-- E-Wallet Section -->
+        <section id="ewallet" class="ewallet-section">
+            <h1>E-Wallet Payment</h1>
+            <div class="ewallet-item">
+                <span>Gopay: 081329731976</span>
+                <button class="copy-btn" onclick="copyToClipboard('08123456789')">Copy</button>
+            </div>
+            <div class="ewallet-item">
+                <span>OVO: 081329731976</span>
+                <button class="copy-btn" onclick="copyToClipboard('08123456790')">Copy</button>
+            </div>
+            <div class="ewallet-item">
+                <span>DANA: 081329731976</span>
+                <button class="copy-btn" onclick="copyToClipboard('08123456791')">Copy</button>
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section id="contact" class="contact-section">
+            <h1>Owner Contact</h1>
+            <div class="contact-info">
+                <a href="tel:+6281329731976" aria-label="Call Sathya Store"><i class="fas fa-phone"></i> +62 813-2973-1976</a>
+                <a href="mailto:sathyastore033@gmail.com" aria-label="Email Sathya Store"><i class="fas fa-envelope"></i> sathyastore033@gmail.com</a>
+                <a href="https://wa.me/6281329731976" target="_blank" rel="noopener" aria-label="Chat on WhatsApp"><i class="fab fa-whatsapp"></i> Chat on WhatsApp</a>
+            </div>
+        </section>
+    </div>
+    <div class="notification" id="notification"></div>
+
+    <script>
+        const createPaymentUrl = 'https://apikey-three.vercel.app/orderkuota/createpayment?apikey=new2026&amount=${amount}&codeqr=00020101021126670016COM.NOBUBANK.WWW01189360050300000879140214456089642066700303UMI51440014ID.CO.QRIS.WWW0215ID20253689504370303UMI5204541153033605802ID5922SATHYA+STORE+OK17368966008JEMBRANA61058221162070703A016304D1AA';
+        const checkStatusBaseUrl = 'https://apikey-three.vercel.app/orderkuota/cekstatus?apikey=new2026&merchant=OK1736896&keyorkut=730592217190613531736896OKCT38A92991B103BA13AAE2DF0A0839A8AA';
+        let pollingTimeout;
+        const POLLING_INTERVAL = 5000; // 5 seconds
+        const MAX_POLLING_DURATION = 300000; // 5 minutes
+
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('active');
+        }
+
+        function showSection(sectionId) {
+            // Hide all sections
+            document.querySelectorAll('.container section').forEach(section => {
+                section.style.display = 'none';
+            });
+            // Show selected section
+            document.getElementById(sectionId).style.display = 'block';
+            // Close sidebar
+            document.getElementById('sidebar').classList.remove('active');
+            // Stop polling if not in QRIS section
+            if (sectionId !== 'qris' && pollingTimeout) {
+                clearTimeout(pollingTimeout);
+                pollingTimeout = null;
+            }
+        }
+
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                showNotification('Number copied to clipboard!', 'success');
+            }).catch(() => {
+                showNotification('Failed to copy number', 'error');
+            });
+        }
+
+        async function createPayment() {
+            const amount = document.getElementById('amount').value;
+            const notification = document.getElementById('notification');
+            const loading = document.getElementById('loading');
+            const qrisContainer = document.getElementById('qrisContainer');
+            const qrisImage = document.getElementById('qrisImage');
+            const statusDiv = document.getElementById('status');
+
+            // Validate amount
+            if (!amount || amount < 1000) {
+                showNotification('Amount must be at least 1000', 'error');
+                return;
+            }
+
+            // Show loading
+            loading.style.display = 'block';
+            qrisContainer.style.display = 'none';
+            notification.style.display = 'none';
+
+            try {
+                // Call createPayment API
+                const response = await fetch(createPaymentUrl.replace('${amount}', amount));
+                const data = await response.json();
+
+                if (data.status && data.result.imageqris.url && data.result.idtransaksi) {
+                    // Display QRIS
+                    qrisImage.src = data.result.imageqris.url;
+                    qrisContainer.style.display = 'block';
+                    statusDiv.textContent = 'Waiting for payment...';
+                    showNotification('QRIS generated successfully!', 'success');
+
+                    // Start polling for status with idtransaksi
+                    startPolling(data.result.idtransaksi);
+                } else {
+                    showNotification('Failed to generate QRIS', 'error');
+                }
+            } catch (error) {
+                showNotification('Error: ' + error.message, 'error');
+            } finally {
+                loading.style.display = 'none';
+            }
+        }
+
+        function startPolling(idtransaksi) {
+            const statusDiv = document.getElementById('status');
+            let startTime = Date.now();
+
+            async function pollStatus() {
+                // Stop if polling exceeds max duration
+                if (Date.now() - startTime > MAX_POLLING_DURATION) {
+                    statusDiv.textContent = 'Status: Polling timed out';
+                    showNotification('Status check timed out after 5 minutes', 'error');
+                    return;
+                }
+
+                try {
+                    // Construct status URL with idtransaksi
+                    const statusUrl = `https://apikey-three.vercel.app/orderkuota/cekstatus?apikey=new2026&merchant=OK1736896&keyorkut=730592217190613531736896OKCT38A92991B103BA13AAE2DF0A0839A8AA`;
+                    const data = await response.json();
+
+                    if (data.status && data.result) {
+                        const result = data.result;
+                        statusDiv.textContent = 'If the status does not appear, contact the owner Waiting for payment...';
+
+                        if (result.type && result.type.toLowerCase() === 'success') {
+                            showNotification(
+                                `Incoming Funds:\nAmount: ${result.amount || 'N/A'}\nDate: ${result.date || 'N/A'}\nBrand: ${result.brand_name || 'N/A'}\nIssuer Ref: ${result.issuer_reff || 'N/A'}\nBuyer Ref: ${result.buyer_reff || 'N/A'}\nBalance: ${result.balance || 'N/A'}`,
+                                'success'
+                            );
+                            statusDiv.textContent = 'Payment received!';
+                        } else {
+                            pollingTimeout = setTimeout(pollStatus, POLLING_INTERVAL);
+                        }
+                    } else {
+                        statusDiv.textContent = 'Status: Failed to check';
+                        pollingTimeout = setTimeout(pollStatus, POLLING_INTERVAL);
+                    }
+                } catch (error) {
+                    statusDiv.textContent = 'Status: Error checking status';
+                    pollingTimeout = setTimeout(pollStatus, POLLING_INTERVAL);
+                }
+            }
+
+            pollStatus();
+        }
+
+        function showNotification(message, type) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = `notification ${type}`;
+            notification.style.display = 'block';
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 5000);
+        }
+
+        // Clean up polling on page unload
+        window.addEventListener('unload', () => {
+            if (pollingTimeout) {
+                clearTimeout(pollingTimeout);
+            }
+        });
+
+        // Show profile section by default
+        showSection('profile');
+    </script>
+</body>
+</html>
